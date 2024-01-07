@@ -1,0 +1,15 @@
+.sidebar {
+  width: 200px;
+  display: flex;
+  background-color: gray;
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  flex-direction: column;
+  align-items: center;
+  font-size: 18px;
+}
+
+.custominput {
+  width: 50px;
+}
