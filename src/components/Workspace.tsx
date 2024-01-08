@@ -143,6 +143,32 @@ function Workspace({ k1, k2, k3 }: WorkspaceInfo) {
     }
   };
 
+  const drawTri = (
+    context: CanvasRenderingContext2D,
+    rotateMatrix: Matrix,
+    a: Matrix,
+    b: Matrix,
+    c: Matrix
+  ) => {
+    a = rotateMatrix.multiply(a);
+    b = rotateMatrix.multiply(b);
+    c = rotateMatrix.multiply(c);
+    context.beginPath();
+    context.moveTo(
+      a.at(0, 0) * scale + context.canvas.width / 2,
+      context.canvas.height / 2 - a.at(1, 0) * scale
+    );
+    context.lineTo(
+      b.at(0, 0) * scale + context.canvas.width / 2,
+      context.canvas.height / 2 - b.at(1, 0) * scale
+    );
+    context.lineTo(
+      c.at(0, 0) * scale + context.canvas.width / 2,
+      context.canvas.height / 2 - c.at(1, 0) * scale
+    );
+    context.fill();
+  };
+
   const drawAxes = (
     context: CanvasRenderingContext2D,
     rotateMatrix: Matrix
@@ -161,20 +187,49 @@ function Workspace({ k1, k2, k3 }: WorkspaceInfo) {
       return rotateMatrix.multiply(value);
     });
 
-    context.beginPath();
-    context.moveTo(
-      poligon[1].at(0, 0) * scale + context.canvas.width / 2,
-      context.canvas.height / 2 - poligon[1].at(1, 0) * scale
+    drawTri(
+      context,
+      rotateMatrix,
+      new Matrix(4, 1, [[5], [0], [0], [0]]),
+      new Matrix(4, 1, [[4.8], [-0.2], [0], [0]]),
+      new Matrix(4, 1, [[4.8], [0.2], [0], [0]])
     );
-    context.lineTo(
-      poligon[1].at(0, 0) * scale + context.canvas.width / 2 - 15,
-      context.canvas.height / 2 - 15 - poligon[1].at(1, 0) * scale
+    drawTri(
+      context,
+      rotateMatrix,
+      new Matrix(4, 1, [[5], [0], [0], [0]]),
+      new Matrix(4, 1, [[4.8], [0], [-0.2], [0]]),
+      new Matrix(4, 1, [[4.8], [0], [0.2], [0]])
     );
-    context.lineTo(
-      poligon[1].at(0, 0) * scale + context.canvas.width / 2 - 15,
-      context.canvas.height / 2 + 15 - poligon[1].at(1, 0) * scale
+
+    drawTri(
+      context,
+      rotateMatrix,
+      new Matrix(4, 1, [[0], [5], [0], [0]]),
+      new Matrix(4, 1, [[-0.2], [4.8], [0], [0]]),
+      new Matrix(4, 1, [[0.2], [4.8], [0], [0]])
     );
-    context.fill();
+    drawTri(
+      context,
+      rotateMatrix,
+      new Matrix(4, 1, [[0], [5], [0], [0]]),
+      new Matrix(4, 1, [[0], [4.8], [-0.2], [0]]),
+      new Matrix(4, 1, [[0], [4.8], [0.2], [0]])
+    );
+    drawTri(
+      context,
+      rotateMatrix,
+      new Matrix(4, 1, [[0], [0], [5], [0]]),
+      new Matrix(4, 1, [[-0.2], [0], [4.8], [0]]),
+      new Matrix(4, 1, [[0.2], [0], [4.8], [0]])
+    );
+    drawTri(
+      context,
+      rotateMatrix,
+      new Matrix(4, 1, [[0], [0], [5], [0]]),
+      new Matrix(4, 1, [[0], [-0.2], [4.8], [0]]),
+      new Matrix(4, 1, [[0], [0.2], [4.8], [0]])
+    );
 
     for (let i = 1; i < axesPoints.length; i++) {
       drawLinexyAxes(context, axesPoints[0], poligon[i]);
@@ -309,17 +364,7 @@ function Workspace({ k1, k2, k3 }: WorkspaceInfo) {
     context.lineTo(dispXp2, dispYp2);
     context.stroke();
   };
-
-  const points: Matrix[] = [
-    new Matrix(4, 1, [[0], [0], [0], [0]]),
-    new Matrix(4, 1, [[0], [0], [1], [0]]),
-    new Matrix(4, 1, [[0], [1], [1], [0]]),
-    new Matrix(4, 1, [[0], [1], [0], [0]]),
-    new Matrix(4, 1, [[0], [0], [0], [0]]),
-    new Matrix(4, 1, [[1], [0], [0], [0]]),
-    new Matrix(4, 1, [[1], [2], [2], [0]]),
-    new Matrix(4, 1, [[0], [0], [1], [0]]),
-  ];
+  const [points, setPoints] = useState<Matrix[]>([]);
 
   const readPoints = (event) => {
     const input: HTMLInputElement = document.querySelector("#enterFile")!;
@@ -330,6 +375,24 @@ function Workspace({ k1, k2, k3 }: WorkspaceInfo) {
 
     reader.onload = () => {
       console.log(reader.result);
+      const text: string = reader.result;
+      const arr = text.split("\n");
+      console.log(arr);
+      const newPoints: Matrix[] = [];
+      for (let i = 0; i < arr.length; i++) {
+        const els = arr[i].split(","); //str.replace(/[^a-zA-Z ]/g, "")
+        console.log(els);
+        newPoints.push(
+          new Matrix(4, 1, [
+            [Number(els[0])],
+            [Number(els[1])],
+            [Number(els[2])],
+            [Number(els[3][0])],
+          ])
+        );
+      }
+      setPoints(newPoints);
+      console.log(points);
     };
   };
   return (
