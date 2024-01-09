@@ -15,6 +15,16 @@ function Workspace({ k1, k2, k3 }: WorkspaceInfo) {
   let kx: number, ky: number, kz: number;
   (kx = k1), (ky = k2), (kz = k3);
 
+  let allTimeKx = kx - kxold;
+  let allTimeKy = ky - kyold;
+  let allTimeKz = kz - kzold;
+
+  if (kx > kxold) {
+    setKxold(kx + 0.02);
+  } else if (kx < kxold) {
+    setKxold(kx - 0.02);
+  }
+
   let coswy = ky * Math.sqrt(2 / (kx * kx + ky * ky + kz * kz));
   if (coswy > 1) coswy = 1;
   else if (coswy < -1) coswy = -1;
@@ -229,6 +239,24 @@ function Workspace({ k1, k2, k3 }: WorkspaceInfo) {
       new Matrix(4, 1, [[0], [0], [5], [0]]),
       new Matrix(4, 1, [[0], [-0.2], [4.8], [0]]),
       new Matrix(4, 1, [[0], [0.2], [4.8], [0]])
+    );
+
+    context.beginPath();
+    context.font = "bold 15px sans-serif";
+    context.fillText(
+      String("x"),
+      Number(poligon[1].at(0, 0)) * scale + context.canvas.width / 2 + 15,
+      context.canvas.height / 2 - poligon[1].at(1, 0) * scale
+    );
+    context.fillText(
+      String("y"),
+      Number(poligon[2].at(0, 0)) * scale + context.canvas.width / 2 + 15,
+      context.canvas.height / 2 - poligon[2].at(1, 0) * scale
+    );
+    context.fillText(
+      String("z"),
+      Number(poligon[3].at(0, 0)) * scale + context.canvas.width / 2 + 15,
+      context.canvas.height / 2 - poligon[3].at(1, 0) * scale
     );
 
     for (let i = 1; i < axesPoints.length; i++) {
